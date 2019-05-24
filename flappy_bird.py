@@ -4,6 +4,7 @@ import time
 
 pygame.init()
 
+#GAME CONSTANTS
 display_width = 800
 display_height = 600
 gap_width = 50
@@ -12,15 +13,29 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 grey =(153, 155, 158)
 white = (255, 255, 255)
 green = (2, 112, 11)
+dgreen =(7, 56, 1)
 blue = (2, 4, 96)
 yellow = (232, 132, 11)
-bg_image = pygame.image.load("background.png")
-bg_image = pygame.transform.scale(bg_image, (display_width, display_height))
-radius = 15
+black = (0, 0, 0)
+bird_width = 40
+bird_height = 40
 birdX = 100
 highscore = 0
 clock=pygame.time.Clock()
 
+#GAME DIFFICULTY SETTINGS
+jump_vel = 15
+g = 1
+speedX = 5
+timer =40
+
+#LOADING THE IMAGES
+bg_image = pygame.image.load("background.png")
+bg_image = pygame.transform.scale(bg_image, (display_width, display_height))
+bird = pygame.image.load("bird.png")
+bird = pygame.transform.scale(bird, (bird_width, bird_height))
+
+#GRID FOR ADJUSTING THE DIMENSION PARAMETERS
 def draw_grid():
 	for i in range(0, display_height, 100):
 		pygame.draw.line(gameDisplay, grey, (0,i), (display_width,i))
@@ -35,7 +50,10 @@ def display_score(score):
 	text1 = font.render("Score: "+ str(score), True, blue)
 	text2= font.render("High Score: "+ str(highscore), True, blue)
 	gameDisplay.blit(text1, (0,0))
-	gameDisplay.blit(text2, (display_width-160,0))
+	gameDisplay.blit(text2, (display_width-200,0))
+
+def draw_bird(birdY):
+	gameDisplay.blit(bird,(birdX, birdY))
 
 def game_over():
 	font = pygame.font.SysFont(None, 110)
@@ -68,11 +86,11 @@ def game_loop():
 				quit()
 			if event.type==pygame.KEYDOWN:
 				if event.key==pygame.K_SPACE:
-					v=-20
+					v=-jump_vel
 					init_y = birdY
 					t= 0
 
-		birdY = init_y + v*t + 2*t*t
+		birdY = init_y + v*t + g*t*t
 		gameDisplay.blit(bg_image,(imageX,0))
 		gameDisplay.blit(bg_image,(imageX+display_width,0))
 		draw_grid()
@@ -80,14 +98,16 @@ def game_loop():
 		i = 0
 		while xpos<display_width:
 			pygame.draw.rect(gameDisplay, green, [xpos, 0, gap_width, ypos[i]])
+			pygame.draw.rect(gameDisplay, dgreen, [xpos-4, ypos[i]-20, gap_width+8, 20])
 			pygame.draw.rect(gameDisplay, green, [xpos, ypos[i]+gap_height, gap_width, display_height-ypos[i]-gap_height])
+			pygame.draw.rect(gameDisplay, dgreen, [xpos-4, ypos[i]+gap_height, gap_width+8, 20])
 			xpos+=300
 			i+=1
-		pygame.draw.circle(gameDisplay, yellow, (birdX,birdY), radius)
+		draw_bird(birdY)
 		display_score(score)
 		t+=1
-		x-=5
-		imageX-=5
+		x-=speedX
+		imageX-=speedX
 		if imageX == -display_width:
 			imageX+= display_width
 		if x==-gap_width:
@@ -96,11 +116,14 @@ def game_loop():
 			ypos.append(random.randrange(100, display_height-200))
 
 		pygame.display.update()
-		clock.tick(30)
-		if birdY>display_height or birdY<0:
+		clock.tick(timer)
+		if birdY>display_height or birdY+bird_height<0:
 			game_over()
 
-		if (birdY-radius<ypos[0] or birdY+radius>ypos[0]+gap_height) and (x<birdX<x+gap_width):
+		if (birdY<=ypos[0] or birdY+bird_height>=ypos[0]+gap_height) and (x<birdX+gap_width//2<x+gap_width):
+			game_over()
+
+		if (birdY+bird_height//2<=ypos[0] or birdY+bird_height//2>=ypos[0]+gap_height) and (x==birdX+bird_width-2):
 			game_over()
 
 		if (x+gap_width==birdX):
