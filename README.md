@@ -31,6 +31,17 @@ The rewards are :
 - -1000 for death
 
 After each death, the Q values of each state-action pair encuntered is updated as per the given formula
-'''math
-Q(s,a) <- Q(s,a) + α*(r+ γ*Q(s',a')+Q(s,a))
+'''python
+self.qvalues[state][act] = (1-self.step_size) * (self.qvalues[state][act]) + self.step_size * ( cur_reward + self.discount*max(self.qvalues[res_state]) )
 '''
+
+where:
+step-size = 0.7
+discount = 1
+res_state is the state resulting from that state-action pair
+cur_reward is the current reward assigned to the state-action pair
+
+## PERFORMANCE
+
+The bot has been extremely slow and inconsistent in the beginning, due to my constant experiment with the learnign parameters.
+However, once I finalised my algorithm it has shown an excellent growth in average score.
