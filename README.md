@@ -42,12 +42,12 @@ where:
 - res_state is the state resulting from that state-action pair
 - cur_reward is the current reward assigned to the state-action pair
 
-## PERFORMANCE
+# PERFORMANCE
 
 The bot has been extremely slow and inconsistent in the beginning, due to my constant experiment with the learnign parameters.
 However, once I finalised my algorithm it has shown an excellent growth in average score.
 
-## REFERENCES
+# REFERENCES
 
 - https://github.com/chncyhn/flappybird-qlearning-bot
 - https://www.youtube.com/watch?v=ujOTNg17LjI&list=PLQVvvaa0QuDdLkP8MrOXLe_rKuf6r80KO
