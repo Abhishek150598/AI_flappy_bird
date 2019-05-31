@@ -2,6 +2,8 @@
 
 The idea of this project is to create a clone of the popular mobile game, Flappy Birds and train an AI bot to play the game. The game is available in 2 modes- human mode and AI mode.
 
+![Screenshot](https://github.com/Abhishek150598/AI_flappy_bird/blob/master/screenshot.png)
+
 # LANGUAGES/TECHNOLOGIES USED
 
 - Python
