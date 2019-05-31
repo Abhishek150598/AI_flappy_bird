@@ -1,7 +1,6 @@
 import pygame
 import random
 import time
-from AI import AI
 import json
 
 pygame.init()
@@ -21,11 +20,10 @@ yellow = (232, 132, 11)
 bird_width = 40
 bird_height = 40
 birdX = 100
-ai = AI()
 
 #LOADING HIGHSCORE AND NUMBER OF ITERATIONS FROM JSON FILE
 try:
-	f = open('bot_scores.json', 'r')
+	f = open('scores.json', 'r')
 	scores = json.load(f)
 	highscore = scores['highscore']
 	iterations = scores['iterations']
@@ -40,7 +38,7 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 jump_vel = 12
 g = 1
 speedX = 5
-fps = 80
+fps = 40
 
 # LOADING THE IMAGES
 bg_image = pygame.image.load("background.png")
@@ -69,7 +67,6 @@ def display_score(score):
 	if score>highscore:
 		highscore = score
 	display_text(35, "Score: "+str(score), black, (60,20))
-	display_text(35, "AI Mode ", black, (60,45))
 	display_text(35, "High Score: "+str(highscore), black, (display_width-120,20))
 	display_text(35, "Iterations: "+str(iterations), black, (display_width-120,45))
 	
@@ -100,25 +97,30 @@ def game_over(score):
 	scores['iterations'] = iterations
 	scores['highscore'] = highscore
 	scores['scores'].append(score)
-	f = open("bot_scores.json", "w")
+	f = open("scores.json", "w")
 	json.dump(scores, f)
 	f.close()
 
 	# GAME OVER
 	display_text(110, "Game over!", black, (display_width*0.5, display_height*0.4))
 	# FINAL SCORE
-	display_text(50, "Score: "+str(score), black, (display_width*0.5, display_height*0.5))
+	display_text(50, "Your score: "+str(score), black, (display_width*0.5, display_height*0.5))
 	# PRESS ENTER FOR NEW GAME
-	time.sleep(0.5)
-	if iterations > 12000:
-		pygame.quit()
-		quit()
-	game_loop()
+	display_text(50, "Press ENTER for new game", red, (display_width*0.5, display_height*0.65))
+	pygame.display.update()
+
+	while True:
+		for event in pygame.event.get():
+			if event.type==pygame.QUIT:
+				pygame.quit()
+				quit()
+			if event.type==pygame.KEYDOWN:
+				if event.key==pygame.K_RETURN:
+					game_loop()
 
 # GAME LOOP
 def game_loop():
 
-	global ai
 	init_y = (display_height * 0.4) # Initial height; updates to current height every time a jump is made
 	birdY = (display_height * 0.4) # Current height of the bird
 	imageX = 0
@@ -128,26 +130,47 @@ def game_loop():
 	birdV = 0 # Current velocity of the bird
 	x = 300 # X coordinate of the leftmost pipe
 	ypos =[]
-	pipeX = 300
 	# Y COORDINATE OF TOP LEFT CORNER OF THE NEXT 3 GAPS; WILL BE UPDATED WHEN ANY PIPE GOES OUT OF SIGHT
 	for i in range(3):
 		ypos.append(random.randrange(80, display_height-200))
 	time.sleep(0.5)
-	pipeY = ypos[0]
+
 	
-	ai.set_last_state(pipeX-birdX, pipeY-birdY, birdV)
+
+	#DRAW THE BACKGROUND, BIRD AND PIPES; BIRD WON'T MOVE UNTIL SPACE IS PRESSED
+	draw_bg(imageX)
+	draw_pipe(x,ypos)
+	draw_bird(birdY)
+	pygame.display.update()
+
+	start = False
+	# CHECKING IF SPACEBAR KEY IS PRESSED TO START THE GAME 
+	while not start:
+		for event in pygame.event.get():
+			if event.type==pygame.QUIT:
+				pygame.quit()
+				quit()
+			if event.type==pygame.KEYDOWN:
+				if event.key==pygame.K_SPACE:
+					start = True
+		
+		
 	while True:
+
+		# CHECKING IF SPACEBAR KEY IS PRESSED
+		for event in pygame.event.get():
+			if event.type==pygame.QUIT:
+				pygame.quit()
+				quit()
+			if event.type==pygame.KEYDOWN:
+				if event.key==pygame.K_SPACE:
+					u =-jump_vel
+					init_y = birdY
+					t = 0
+
 		#EQUATION OF MOTION OF THE BIRD
 		birdV = u + g*t
 		birdY = init_y + u*t + g*t*t
-
-		#BOT DECIDES WHETHER TO JUMP OR DO NOTHING 
-		if t>=1:
-			jump = ai.act(pipeX-birdX, pipeY-birdY, birdV)
-			if jump:
-				u =-jump_vel
-				init_y = birdY
-				t = 0
 
 		#DRAW THE BACKGROUND, BIRD AND PIPES 
 		draw_bg(imageX)
@@ -163,7 +186,13 @@ def game_loop():
 		x -= speedX
 		imageX -= speedX
 		if imageX == -display_width:
-			imageX+= display_width 
+			imageX+= display_width  
+
+		# WHETN LEFTMOST PIPE GOES OUT OF DISPLAY, DELETE ITS RANDOMLY GENERATED Y COORDINATE AND ADD A NEW Y COORDINATE FOR THE NEXT PIPE
+		if x == -gap_width:
+			x = x+300
+			del ypos[0]
+			ypos.append(random.randrange(100, display_height-200))
 
 		if x+gap_width<=birdX:
 			pipeX = x+300
@@ -172,24 +201,16 @@ def game_loop():
 			pipeX = x 
 			pipeY = ypos[0]
 
-		# WHETN LEFTMOST PIPE GOES OUT OF DISPLAY, DELETE ITS RANDOMLY GENERATED Y COORDINATE AND ADD A NEW Y COORDINATE FOR THE NEXT PIPE
-		if x == -gap_width:
-			x = x+300
-			del ypos[0]
-			ypos.append(random.randrange(100, display_height-200))
-
+		print((pipeX-birdX+60)//10, (pipeY-birdY+600)//10, birdV)
 		
 		# CONDITIONS FOR GAME OVER; BIRD HITTING THE PIPE OR GOING BELOW DISPLAY  
 		if birdY>=display_height:
-			ai.update_q()
 			game_over(score)
 
 		if (birdY+5<=ypos[0] or birdY+bird_height>=ypos[0]+gap_height) and (x<birdX+gap_width//2<x+gap_width):
-			ai.update_q()
 			game_over(score)
 
 		if (birdY+bird_height//2<=ypos[0] or birdY+bird_height//2>=ypos[0]+gap_height) and (x==birdX+bird_width-2):
-			ai.update_q()
 			game_over(score)
 
 		# UPDATING SCORE EVERY TIME A PIPE IS CROSSED 
@@ -215,7 +236,6 @@ def start_game():
 		if imageX == -display_width:
 			imageX+= display_width
 		display_text(110, "FLAPPY BIRDS", red, (display_width*0.5, display_height*0.3))
-		display_text(40, "AI MODE", red, (display_width*0.5, display_height*0.39))
 		display_text(50, "* Press the Spacebar to keep the bird flying", black, (display_width*0.5, display_height*0.5))
 		display_text(50, "* You score one point for avoiding one pipe!", black, (display_width*0.5, display_height*0.6))
 		display_text(50, "Press ENTER to continue", red, (display_width*0.5, display_height*0.8))

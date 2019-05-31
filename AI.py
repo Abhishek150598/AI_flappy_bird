@@ -8,13 +8,15 @@ class AI:
 		self.games = 0 # No of games played by the AI in the current run
 		self.dump_freq = 20 # No of games after which data is dumped into json
 		self.step_size = 0.7
-		self.reward = {'alive' : 1, 'dead' : -1000, 'near_dead' : -800}
+		self.reward = {'alive' : 1, 'dead' : -1000}
 		self.discount = 1.0
 		self.last_state = "32_36_10"
 		self.last_action = 0
 		self.moves = []
 		self.load_q()
 
+	def set_last_state(self,  x_dist, y_dist, vel):
+		self.last_state = self.get_state(x_dist, y_dist, vel)
 	# FUNCTION TO LOAD Q VALUES FROM A JSON qvalues.json
 	def load_q(self):
 
@@ -53,6 +55,7 @@ class AI:
 		index = 0
 		
 		high_death_flag = True if int(history[0][2].split("_")[1])>60 else False
+		low_death_flag = True if int(history[0][2].split("_")[1])<48 else False
 
 		for exp in history:
 
@@ -63,20 +66,15 @@ class AI:
 			# ASSIGNING REWARDS BASED ON THE SITUATION
 			if index == 0 or index == 1:
 				cur_reward = self.reward['dead']
-			elif index == 2 or index == 3:
-				cur_reward = self.reward['near_dead']
 			elif high_death_flag and act:
-				cur_reward = self.reward['near_dead']
+				cur_reward = self.reward['dead']
 				print("High death")
 				high_death_flag = False
 			else:
 				cur_reward = self.reward['alive']
 
-			
-			#print("before: ",self.qvalues[state][act])
 			# UPDATING THE Q VALUE
 			self.qvalues[state][act] = (1-self.step_size) * (self.qvalues[state][act]) + self.step_size * ( cur_reward + self.discount*max(self.qvalues[res_state]) )
-			#print("after: ",self.qvalues[state][act])
 			index += 1
 
 		self.games += 1
