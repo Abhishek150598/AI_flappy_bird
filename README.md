@@ -45,7 +45,8 @@ where:
 # PERFORMANCE
 
 The bot has been extremely slow and inconsistent in the beginning, due to my constant experiment with the learnign parameters.
-However, once I finalised my algorithm it has shown an excellent growth in average score.
+However, once I finalised my algorithm it has shown an excellent growth in average score. Here is the score distribution after 1000 iterations.
+![Iteration vs score](https://github.com/Abhishek150598/AI_flappy_bird/blob/master/score_plot.png)
 
 # REFERENCES
 
