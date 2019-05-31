@@ -32,9 +32,9 @@ The rewards are :
 
 After each death, the Q values of each state-action pair encuntered is updated as per the given formula
 
-' ' ' python
+```python
 qvalues[state][act] = (1-step_size) * (qvalues[state][act]) + step_size * ( cur_reward + discount*max(qvalues[res_state]) )
-' ' '
+```
 
 where:
 step-size = 0.7
