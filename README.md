@@ -37,10 +37,10 @@ qvalues[state][act] = (1-step_size) * (qvalues[state][act]) + step_size * ( cur_
 ```
 
 where:
-step-size = 0.7
-discount = 1
-res_state is the state resulting from that state-action pair
-cur_reward is the current reward assigned to the state-action pair
+- step-size = 0.7
+- discount = 1
+- res_state is the state resulting from that state-action pair
+- cur_reward is the current reward assigned to the state-action pair
 
 ## PERFORMANCE
 
