@@ -11,7 +11,7 @@ The idea of this project is to create a clone of the popular mobile game, Flappy
 
 ## DESIGNING THE GAME
 
-The bird follows kinematics equations and each time a spacebar is clicked an upward force is added. The pipe gaps are randomly generated (initially 3 random values are generated in a list, when a pipe goes out of display the first random variable gets popped and a new one gets pushed to the list).
+The bird follows kinematics equations and each time the spacebar is clicked, an upward force is applied. The pipe gaps are randomly generated (initially 3 random values are generated in a list, when a pipe goes out of display the first random variable gets popped and a new one gets pushed to the list).
 
 ## DESIGNING THE BOT
 
@@ -31,4 +31,6 @@ The rewards are :
 - -1000 for death
 
 After each death, the Q values of each state-action pair encuntered is updated as per the given formula
+'''math
+Q(s,a) <- Q(s,a) + α*(r+ γ*Q(s',a')+Q(s,a))
 '''
