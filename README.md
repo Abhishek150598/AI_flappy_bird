@@ -17,7 +17,7 @@ The bird follows kinematics equation of free fall and each time the spacebar is 
 
 ### DESIGNING THE BOT
 
-The bot uses a popular values-based reinforcement learning algorithm known as Q learning. For every frame in the game loop, we define a state space and an action space.
+The bot uses a popular values-based reinforcement learning algorithm known as Q learning. For every frame in the game loop, we define a state space and an action.
 The state space is given by the following three variables :
 - The horizontal distance between bird and pipe (Assuming 10 pixels as 1 unit for faster training)
 - The vertical distance between bird and end of top pipe (Assuming 10 pixels as 1 unit for faster training)
@@ -27,12 +27,12 @@ The action space is given by :
 - To jump
 - To do nothing
 
-For each state-action pair, we assign a Q- value which is initially zero. Based on the bird's performance we assign certain reward/penalty to each state-action pair based on its outcome.
+For each state-action pair, we assign a Q- value which is initially zero. The action for that particular state is decided based on which action's Q value is higher. Based on the bird's performance we assign certain reward/penalty to each state-action pair based on its outcome.
 The rewards are :
 - +1 for survival
 - -1000 for death
 
-After each death, the Q values of each state-action pair encuntered is updated as per the given formula
+After each death, the Q values of each state-action pair encountered is updated as per the given formula
 
 ```python
 qvalues[state][act] = (1-step_size) * (qvalues[state][act]) + step_size * ( cur_reward + discount*max(qvalues[res_state]) )
