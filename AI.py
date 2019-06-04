@@ -55,7 +55,6 @@ class AI:
 		index = 0
 		
 		high_death_flag = True if int(history[0][2].split("_")[1])>60 else False
-		low_death_flag = True if int(history[0][2].split("_")[1])<48 else False
 
 		for exp in history:
 
@@ -68,7 +67,6 @@ class AI:
 				cur_reward = self.reward['dead']
 			elif high_death_flag and act:
 				cur_reward = self.reward['dead']
-				print("High death")
 				high_death_flag = False
 			else:
 				cur_reward = self.reward['alive']
