@@ -68,7 +68,6 @@ def display_score(score):
 		highscore = score
 	display_text(35, "Score: "+str(score), black, (60,20))
 	display_text(35, "High Score: "+str(highscore), black, (display_width-120,20))
-	display_text(35, "Iterations: "+str(iterations), black, (display_width-120,45))
 	
 # FUNCTION FOR DRAWING THE BACKGROUND
 def draw_bg(imageX):
@@ -200,8 +199,6 @@ def game_loop():
 		else:
 			pipeX = x 
 			pipeY = ypos[0]
-
-		print((pipeX-birdX+60)//10, (pipeY-birdY+600)//10, birdV)
 		
 		# CONDITIONS FOR GAME OVER; BIRD HITTING THE PIPE OR GOING BELOW DISPLAY  
 		if birdY>=display_height:

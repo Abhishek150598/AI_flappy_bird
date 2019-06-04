@@ -40,7 +40,7 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 jump_vel = 12
 g = 1
 speedX = 5
-fps = 80
+fps = 3840
 
 # LOADING THE IMAGES
 bg_image = pygame.image.load("background.png")
